@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Title,
@@ -14,9 +14,8 @@ import {
   List,
   ThemeIcon,
   Box,
-  Center,
 } from '@mantine/core';
-import { IconCheck, IconBrandGithub, IconExternalLink } from '@tabler/icons-react';
+import { IconBrandGithub, IconExternalLink } from '@tabler/icons-react';
 import { DatePicker } from '@mehdiraized/dates';
 
 function App() {
@@ -25,7 +24,6 @@ function App() {
 
   return (
     <Box bg="#f8f9fa" style={{ minHeight: '100vh', direction: 'rtl' }}>
-      {/* Navigation */}
       <Box
         component="nav"
         bg="white"
@@ -64,7 +62,6 @@ function App() {
         </Group>
       </Box>
 
-      {/* Hero Section */}
       <Box py={60} className="hero-gradient" style={{ color: 'white', textAlign: 'center' }}>
         <Title order={1} fz={48} mb={16}>
           Persian Date Picker
@@ -82,7 +79,6 @@ function App() {
         </Group>
       </Box>
 
-      {/* Features Section */}
       <Container id="features" py={60}>
         <Title order={2} align="center" mb={24}>
           ویژگی‌های کلیدی
@@ -160,7 +156,6 @@ function App() {
         </Grid>
       </Container>
 
-      {/* Demo Section */}
       <Container id="demo" py={60}>
         <Title order={2} align="center" mb={24}>
           دمو زنده
@@ -257,7 +252,6 @@ function App() {
         </Grid>
       </Container>
 
-      {/* Installation Section */}
       <Container id="installation" py={60}>
         <Title order={2} align="center" mb={24}>
           نصب و راه‌اندازی
@@ -368,7 +362,6 @@ function App() {
         </Grid>
       </Container>
 
-      {/* Usage Examples */}
       <Container py={60}>
         <Title order={2} align="center" mb={24}>
           مثال‌های کاربردی
@@ -435,7 +428,6 @@ function App() {
         </Grid>
       </Container>
 
-      {/* Footer */}
       <Box component="footer" bg="dark.9" c="white" py={40} mt={40}>
         <Container>
           <Grid gutter={32}>

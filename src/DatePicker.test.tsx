@@ -1,9 +1,11 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render } from '@testing-library/react';
+import { MantineProvider } from '@mantine/core';
 import DatePicker from './DatePicker';
 
 test('DatePicker renders without crashing', () => {
-  render(<DatePicker />);
-  // expect(screen.getByText(/date/i)).toBeInTheDocument();
+  render(
+    <MantineProvider>
+      <DatePicker onChange={() => {}} value={null} />
+    </MantineProvider>,
+  );
 });

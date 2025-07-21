@@ -1,0 +1,27 @@
+name: Build and Copy Demo to Docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Install demo dependencies
+        run: cd demo && npm install
+
+      - name: Build demo
+        run: cd demo && npm run build
+
+      - name: Copy demo build to docs/assets
+        run: |
+          rm -rf docs/assets
+          cp -r demo/dist docs/assets
