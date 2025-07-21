@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/mehdiraized/dates/discussions
+    about: Please ask and answer questions here.
+  - name: Documentation
+    url: https://mehdiraized.github.io/dates
+    about: Check our documentation for usage examples and API reference.

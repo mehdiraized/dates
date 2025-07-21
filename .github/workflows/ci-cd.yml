@@ -1,0 +1,175 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests (if any)
+      run: npm test --if-present
+    
+    - name: Build package
+      run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-files
+        path: dist/
+    
+    - name: Check for version bump
+      id: version-check
+      run: |
+        if git log --oneline -1 | grep -E "(feat|fix|breaking|major|minor|patch)" > /dev/null; then
+          echo "version-bump=true" >> $GITHUB_OUTPUT
+        else
+          echo "version-bump=false" >> $GITHUB_OUTPUT
+        fi
+
+  release:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && needs.test-and-build.outputs.version-bump == 'true'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        registry-url: 'https://registry.npmjs.org'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist-files
+        path: dist/
+    
+    - name: Setup Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    
+    - name: Bump version
+      id: version
+      run: |
+        COMMIT_MSG=$(git log --oneline -1)
+        if echo "$COMMIT_MSG" | grep -E "breaking|major" > /dev/null; then
+          BUMP_TYPE="major"
+        elif echo "$COMMIT_MSG" | grep -E "feat|minor" > /dev/null; then
+          BUMP_TYPE="minor"
+        else
+          BUMP_TYPE="patch"
+        fi
+        
+        NEW_VERSION=$(npm version $BUMP_TYPE --no-git-tag-version)
+        echo "new-version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+        echo "bump-type=${BUMP_TYPE}" >> $GITHUB_OUTPUT
+    
+    - name: Update CHANGELOG
+      run: |
+        PREV_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+        CHANGELOG=$(git log --pretty=format:"- %s" ${PREV_VERSION}..HEAD | grep -v "Merge\|chore\|docs" || echo "- General improvements")
+        
+        cat > CHANGELOG.md << 'EOF'
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [${NEW_VERSION#v}] - $(date +%Y-%m-%d)
+
+### Changes
+${CHANGELOG}
+
+$(cat CHANGELOG.md | tail -n +7)
+EOF
+    
+    - name: Build package
+      run: npm run build
+    
+    - name: Publish to NPM
+      run: npm publish --access public
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.new-version }}
+        release_name: Release ${{ steps.version.outputs.new-version }}
+        body: |
+          ## Changes in this release:
+          
+          $(git log --pretty=format:"- %s" $(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~10")..HEAD | grep -v "Merge\|chore\|docs" || echo "- General improvements")
+          
+          ## Installation
+          
+          ```bash
+          npm install @mehdiraized/dates@${{ steps.version.outputs.new-version }}
+          ```
+          
+          ## Documentation
+          
+          Visit our [documentation](https://mehdiraized.github.io/dates) for more information.
+        draft: false
+        prerelease: false
+    
+    - name: Push changes
+      run: |
+        git add .
+        git commit -m "chore: bump version to ${{ steps.version.outputs.new-version }}"
+        git push origin main
+        git tag ${{ steps.version.outputs.new-version }}
+        git push origin ${{ steps.version.outputs.new-version }}
+
+  deploy-docs:
+    needs: [test-and-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        cname: mehdiraized.github.io 
