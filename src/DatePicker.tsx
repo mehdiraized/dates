@@ -86,7 +86,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 	type = "single",
 	disabled = false,
 	label,
-	placeholder = "تاریخ انتخاب کنید",
+	placeholder = "تاریخ مورد نظر را انتخاب کنید",
 	size = "md",
 	className,
 	classNames = {},
