@@ -1,6 +1,10 @@
 # @mehdiraized/dates
 
-A Persian (Jalali) date picker component for React with Mantine UI support.
+A beautiful Persian (Jalali) date picker component for React with Mantine UI support.
+
+[🌐 **Live Demo & Documentation**](https://mehdiraized.github.io/dates)
+
+[📦 **NPM Package**](https://www.npmjs.com/package/@mehdiraized/dates)
 
 ## Features
 
@@ -12,21 +16,21 @@ A Persian (Jalali) date picker component for React with Mantine UI support.
 - 🎯 TypeScript support
 - 🎨 Mantine UI integration
 
-## Installation
+## Quick Start
+
+### Installation
 
 ```bash
 npm install @mehdiraized/dates
 ```
 
-## Dependencies
+### Dependencies
 
 This package requires the following peer dependencies:
 
 ```bash
 npm install react react-dom @mantine/core @tabler/icons-react dayjs
 ```
-
-## Usage
 
 ### Basic Usage
 
@@ -67,27 +71,11 @@ function App() {
 }
 ```
 
-### Custom Styling
+## Documentation
 
-```tsx
-import { DatePicker } from "@mehdiraized/dates";
+For complete documentation, examples, and live demos, visit:
 
-function App() {
-	return (
-		<DatePicker
-			value={date}
-			onChange={setDate}
-			size="lg"
-			classNames={{
-				container: "my-custom-container",
-				input: "my-custom-input",
-				day: "my-custom-day",
-				selectedDay: "my-custom-selected-day",
-			}}
-		/>
-	);
-}
-```
+**[🌐 Live Documentation](https://mehdiraized.github.io/dates)**
 
 ## Props
 
@@ -106,33 +94,6 @@ function App() {
 | `className`   | `string`                               | -                     | Additional CSS classes                 |
 | `classNames`  | `DatePickerClassNames`                 | -                     | Custom class names for different parts |
 | `maxDate`     | `string`                               | -                     | Maximum selectable date                |
-
-### DatePickerClassNames
-
-| Class           | Description           |
-| --------------- | --------------------- |
-| `container`     | Container wrapper     |
-| `input`         | Input field           |
-| `popup`         | Popup container       |
-| `header`        | Header section        |
-| `weeks`         | Week days container   |
-| `weekItem`      | Individual week day   |
-| `days`          | Days grid container   |
-| `day`           | Individual day        |
-| `selectedDay`   | Selected day          |
-| `holiday`       | Holiday styling       |
-| `today`         | Today's date          |
-| `monthsGrid`    | Months grid container |
-| `monthItem`     | Individual month      |
-| `selectedMonth` | Selected month        |
-| `yearsGrid`     | Years grid container  |
-| `yearItem`      | Individual year       |
-| `selectedYear`  | Selected year         |
-| `arrow`         | Navigation arrows     |
-
-## Date Format
-
-The component accepts and returns dates in ISO format (`YYYY-MM-DD`). Internally, it converts between Gregorian and Jalali calendars.
 
 ## Examples
 
@@ -166,37 +127,31 @@ function App() {
 }
 ```
 
-### With Custom Validation
+### Custom Styling
 
 ```tsx
 import { DatePicker } from "@mehdiraized/dates";
 
 function App() {
-	const [date, setDate] = useState<string | null>(null);
-
-	const handleDateChange = (newDate: string | string[]) => {
-		if (typeof newDate === "string") {
-			const selectedDate = new Date(newDate);
-			const today = new Date();
-
-			if (selectedDate > today) {
-				alert("تاریخ آینده انتخاب نمی‌توانید");
-				return;
-			}
-
-			setDate(newDate);
-		}
-	};
-
 	return (
 		<DatePicker
 			value={date}
-			onChange={handleDateChange}
-			maxDate={new Date().toISOString().split("T")[0]}
+			onChange={setDate}
+			size="lg"
+			classNames={{
+				container: "my-custom-container",
+				input: "my-custom-input",
+				day: "my-custom-day",
+				selectedDay: "my-custom-selected-day",
+			}}
 		/>
 	);
 }
 ```
+
+## Date Format
+
+The component accepts and returns dates in ISO format (`YYYY-MM-DD`). Internally, it converts between Gregorian and Jalali calendars.
 
 ## Contributing
 
